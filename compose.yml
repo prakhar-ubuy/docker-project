@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  haproxy:
+    build:
+      context: .
+    container_name: haproxy
+    networks:
+      - my_network
+    ports:
+      - "80:80"  # Expose HAProxy port 80 to the host
+
+  nginx1:
+    build:
+      context: ./nginx1
+    container_name: nginx1
+    networks:
+      - my_network
+    expose:
+      - "80"  # Expose port 80 within the Docker network for HAProxy to reach
+
+  nginx2:
+    build:
+      context: ./nginx2
+    container_name: nginx2
+    networks:
+      - my_network
+    expose:
+      - "80"  # Expose port 80 within the Docker network for HAProxy to reach
+
+  varnish:
+    build:
+      context: ./varnish
+    container_name: varnish
+    networks:
+      - my_network
+    ulimits:
+     memlock:
+      soft: -1  # Unlimited soft lock limit
+      hard: -1  # Unlimited hard lock limit
+    expose:
+      - "80"
+
+
+
+networks:
+  my_network:
+    driver: bridge
+
