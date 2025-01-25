@@ -18,19 +18,26 @@ services:
       - my_network
     expose:
       - "80"  # Expose port 80 within the Docker network for HAProxy to reach
-    deploy
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+
   nginx2:
-    build:
-      context: ./nginx2
+    image: docker-project-nginx2
     container_name: nginx2
     networks:
       - my_network
     expose:
       - "80"  # Expose port 80 within the Docker network for HAProxy to reach
+    deploy:
+      replicas: 2  # Scale nginx2 service to 3 replicas
+      restart_policy:
+        condition: on-failure
 
   varnish:
-    build:
-      context: ./varnish
+    image: docker-project-varnish
     container_name: varnish
     networks:
       - my_network
@@ -40,8 +47,6 @@ services:
       hard: -1  # Unlimited hard lock limit
     expose:
       - "80"
-
-
 
 networks:
   my_network:
